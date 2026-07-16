@@ -1,0 +1,425 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String           @id @default(cuid())
+  clerkId         String           @unique
+  email           String           @unique
+  name            String?
+  avatarUrl       String?
+  role            Role             @default(USER)
+  suspended       Boolean          @default(false)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  aiRequests      AIRequest[]
+  courses         Course[]
+  payments        Payment[]
+  promptTemplates PromptTemplate[]
+  subscription    Subscription?
+  usageRecords    Usage[]
+  learningAssets  LearningAsset[]
+  adminLogs       AdminLog[]
+  feedback        Feedback[]
+
+  @@index([role])
+}
+
+model Subscription {
+  id                String              @id @default(cuid())
+  user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String              @unique
+  stripeId          String?             @unique
+  status            SubscriptionStatus
+  priceId           String
+  interval          BillingInterval
+  trialEndsAt       DateTime?
+  cancelAt          DateTime?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+}
+
+model Course {
+  id            String           @id @default(cuid())
+  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  title         String
+  description   String
+  topic         String
+  audience      String
+  difficulty    Difficulty
+  language      String
+  tone          String
+  lessonCount   Int
+  duration      String
+  status        CourseStatus     @default(DRAFT)
+  coverImageUrl String?
+  archivedAt    DateTime?
+  deletedAt     DateTime?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  modules       Module[]
+  exports       Export[]
+  certificate   Certificate?
+  aiRequests    AIRequest[]
+  learningAssets LearningAsset[]
+  revisions     CourseRevision[]
+
+  @@index([userId, status])
+  @@index([topic])
+  @@index([difficulty])
+}
+
+model Module {
+  id         String    @id @default(cuid())
+  course     Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId   String
+  title      String
+  position   Int
+  deletedAt  DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  lessons    Lesson[]
+
+  @@index([courseId, position])
+}
+
+model Lesson {
+  id          String        @id @default(cuid())
+  module      Module        @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  moduleId    String
+  title       String
+  content     String
+  examples    String?
+  exercises   String?
+  position    Int           @default(0)
+  deletedAt   DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  questionSet Quiz?
+  flashcards  Flashcard[]
+  assignments Assignment[]
+
+  @@index([moduleId])
+}
+
+model Quiz {
+  id          String    @id @default(cuid())
+  lesson      Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lessonId    String    @unique
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  questions   Question[]
+
+  @@index([lessonId])
+}
+
+model Question {
+  id          String   @id @default(cuid())
+  quiz        Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  quizId      String
+  prompt      String
+  answer      String
+  options     String[]
+  deletedAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([quizId])
+}
+
+model Flashcard {
+  id          String   @id @default(cuid())
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lessonId    String
+  front       String
+  back        String
+  deletedAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([lessonId])
+}
+
+model Assignment {
+  id          String   @id @default(cuid())
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lessonId    String
+  title       String
+  description String
+  dueDate     DateTime?
+  deletedAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([lessonId])
+}
+
+model Certificate {
+  id        String   @id @default(cuid())
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId  String   @unique
+  content   String
+  issuedAt  DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CourseRevision {
+  id        String   @id @default(cuid())
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId  String
+  title     String
+  content   String
+  snapshot  String
+  author    String?
+  createdAt DateTime @default(now())
+
+  @@index([courseId, createdAt])
+}
+
+model Export {
+  id          String      @id @default(cuid())
+  course      Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId    String
+  type        ExportType
+  url         String?
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([courseId, type])
+}
+
+model Payment {
+  id              String   @id @default(cuid())
+  userId          String
+  stripePaymentId String   @unique
+  amount          Int
+  currency        String
+  status          String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Usage {
+  id        String      @id @default(cuid())
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  type      UsageType
+  count     Int         @default(0)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  @@index([userId, type])
+}
+
+model PromptTemplate {
+  id          String       @id @default(cuid())
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  name        String
+  description String?
+  type        TemplateType
+  prompt      String
+  deletedAt   DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([userId, type])
+}
+
+model AIRequest {
+  id           String        @id @default(cuid())
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+  course       Course?       @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  courseId     String?
+  lessonId     String?
+  action       RequestAction
+  assetType    String?
+  prompt       String
+  promptVersion String       @default("v1")
+  response     String
+  tokens       Int
+  status       RequestStatus
+  deletedAt    DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([userId, action])
+  @@index([courseId])
+}
+
+model LearningAsset {
+  id            String   @id @default(cuid())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  course        Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId      String
+  lessonId      String?
+  assetType     String
+  title         String
+  content       String
+  promptVersion String   @default("v1")
+  mode          String   @default("generate")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([courseId, assetType])
+  @@index([userId])
+}
+
+model AdminLog {
+  id         String   @id @default(cuid())
+  admin      User     @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  adminId    String
+  action     String
+  category   String
+  target     String?
+  targetId   String?
+  details    String?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  @@index([adminId, createdAt])
+  @@index([category, createdAt])
+}
+
+model Feedback {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  type      String
+  title     String
+  content   String
+  status    String   @default("open")
+  resolved  Boolean  @default(false)
+  response  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, status])
+  @@index([type, status])
+}
+
+model FeatureFlag {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  enabled     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SystemSettings {
+  id                  String   @id @default(cuid())
+  siteName            String   @default("CourseAI")
+  siteBranding        String?
+  defaultTheme        String   @default("light")
+  defaultAiModel      String   @default("gpt-4")
+  rateLimitRequests   Int      @default(100)
+  rateLimitWindow     Int      @default(3600)
+  storageLimit        Int      @default(1000000000)
+  smtpHost            String?
+  smtpPort            Int      @default(587)
+  smtpUser            String?
+  smtpPass            String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+enum Role {
+  GUEST
+  USER
+  PREMIUM
+  ADMIN
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+}
+
+enum PlanName {
+  FREE
+  PRO
+}
+
+enum BillingInterval {
+  MONTHLY
+  YEARLY
+}
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum ExportType {
+  PDF
+  DOCX
+  MARKDOWN
+  HTML
+  JSON
+  CSV
+  POWERPOINT
+  SCORM
+}
+
+enum UsageType {
+  COURSE
+  AI_REQUEST
+  EXPORT
+  STORAGE
+}
+
+enum TemplateType {
+  OUTLINE
+  LESSON
+  QUIZ
+  ASSIGNMENT
+  SLIDES
+  CERTIFICATE
+  SEO
+  MARKETING
+  EMAIL
+  LANDING_PAGE
+}
+
+enum RequestAction {
+  OUTLINE
+  MODULES
+  LESSONS
+  QUIZ
+  FLASHCARDS
+  ASSIGNMENTS
+  PROJECT
+  CERTIFICATE
+  EXPORT
+  ASSISTANT
+  ASSET
+}
+
+enum RequestStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
