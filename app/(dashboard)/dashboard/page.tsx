@@ -1,3 +1,4 @@
+import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { ensurePrismaUser } from "../../../lib/auth";
@@ -9,7 +10,10 @@ import { Badge } from "../../../components/ui/badge";
 import { Tabs } from "../../../components/ui/tabs";
 
 export default async function DashboardPage() {
+  const { userId } = await auth();
   const user = await ensurePrismaUser();
+
+  console.log("DEBUG_USER_ID:", userId, "PRISMA_USER_ID:", user.id);
 
   const [courses, aiRequests, usage, snapshot, recentActivity] = await Promise.all([
     prisma.course.findMany({
@@ -28,6 +32,8 @@ export default async function DashboardPage() {
       select: { action: true, createdAt: true }
     })
   ]);
+
+  console.log("COURSES_FOUND:", courses);
 
   const courseCount = courses.length;
   const planName = planConfig[snapshot.plan as PlanKey].name;
