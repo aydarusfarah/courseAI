@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { ensurePrismaUser } from "../../../../lib/auth";
 import { getFeatureFlags } from "../../../../lib/admin";
-import { Card } from "../../../../components/card";
 import { SectionHeader } from "../../../../components/section-header";
 import FeatureFlagList from "../../../../components/admin/feature-flag-list";
 

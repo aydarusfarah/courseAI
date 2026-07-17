@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: "Admin Subscriptions | CourseAI"
 };
 
-export default async function AdminSubscriptionsPage(props: any) {
+export default async function AdminSubscriptionsPage(props: { searchParams?: Record<string, string | undefined> }) {
   const searchParams = props?.searchParams ?? {};
   const page = Number(searchParams?.page ?? "1");
   const { subscriptions, total, page: currentPage, perPage } = await getAdminSubscriptions({ page, perPage: 50, search: searchParams?.search });

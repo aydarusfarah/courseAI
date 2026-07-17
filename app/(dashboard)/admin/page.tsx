@@ -5,7 +5,6 @@ import { ensurePrismaUser } from "../../../lib/auth";
 import { getAdminDashboardStats, getAdminDashboardTrends } from "../../../lib/admin";
 import { Card } from "../../../components/card";
 import { SectionHeader } from "../../../components/section-header";
-import { Badge } from "../../../components/ui/badge";
 import AdminTrendsCharts from "../../../components/admin/trends-charts";
 
 export default async function AdminDashboardPage() {

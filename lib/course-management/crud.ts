@@ -230,7 +230,7 @@ export async function deleteModule(moduleId: string, userId: string) {
 export async function createLesson(moduleId: string, userId: string, title: string) {
   const module = await prisma.module.findFirst({ where: { id: moduleId, course: { userId, deletedAt: null } } });
   if (!module) return null;
-  const nextPosition = await prisma.lesson.count({ where: { moduleId } });
+  const _nextPosition = await prisma.lesson.count({ where: { moduleId } });
   return prisma.lesson.create({
     data: {
       moduleId,

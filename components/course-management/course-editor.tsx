@@ -11,10 +11,31 @@ import { RichEditor } from "../editor/rich-editor";
 import { Skeleton } from "../ui/skeleton";
 import { Dialog } from "../ui/dialog";
 
-interface ModuleWithLessons extends Record<string, unknown> {
+interface LessonData {
   id: string;
   title: string;
-  lessons: Array<{ id: string; title: string; content: string }>;
+  content: string;
+  examples?: string;
+  exercises?: string;
+  [key: string]: string | undefined;
+}
+
+interface ModuleWithLessons {
+  id: string;
+  title: string;
+  lessons: LessonData[];
+}
+
+interface CourseData {
+  title?: string;
+  description?: string;
+  topic?: string;
+  audience?: string;
+  difficulty?: string;
+  language?: string;
+  tone?: string;
+  status?: string;
+  modules?: ModuleWithLessons[];
 }
 
 interface CourseEditorProps {
@@ -22,7 +43,7 @@ interface CourseEditorProps {
 }
 
 export function CourseEditor({ courseId }: CourseEditorProps) {
-  const [course, setCourse] = useState<any>(null);
+  const [course, setCourse] = useState<CourseData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
@@ -30,7 +51,7 @@ export function CourseEditor({ courseId }: CourseEditorProps) {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<"delete-module" | "delete-lesson" | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const lessonSaveTimers = useRef<Record<string, ReturnType<typeof window.setTimeout>>>({});
+  const lessonSaveTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({}); 
 
   useEffect(() => {
     let active = true;
@@ -50,10 +71,11 @@ export function CourseEditor({ courseId }: CourseEditorProps) {
 
   useEffect(() => {
     if (!dirty || !course) return;
-    const timer = window.setTimeout(() => {
+    const timer = setTimeout(() => {
       void saveCourse();
     }, 600);
-    return () => window.clearTimeout(timer);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [course, dirty]);
 
   async function saveCourse() {
@@ -76,7 +98,7 @@ export function CourseEditor({ courseId }: CourseEditorProps) {
   }
 
   const updateField = (field: string, value: string) => {
-    setCourse((current: any) => ({ ...current, [field]: value }));
+    setCourse((current: CourseData | null) => current ? ({ ...current, [field]: value }) : null);
     setDirty(true);
   };
 
@@ -92,24 +114,24 @@ export function CourseEditor({ courseId }: CourseEditorProps) {
   }
 
   const updateLessonField = (moduleId: string, lessonId: string, field: string, value: string) => {
-    setCourse((current: any) => ({
+    setCourse((current: CourseData | null) => current ? ({
       ...current,
-      modules: current.modules.map((module: ModuleWithLessons) => (module.id === moduleId ? { ...module, lessons: module.lessons.map((lesson: any) => (lesson.id === lessonId ? { ...lesson, [field]: value } : lesson)) } : module))
-    }));
+      modules: current.modules?.map((module: ModuleWithLessons) => (module.id === moduleId ? { ...module, lessons: module.lessons.map((lesson: LessonData) => (lesson.id === lessonId ? { ...lesson, [field]: value } : lesson)) } : module))
+    }) : null);
     setDirty(true);
 
     // Debounced per-lesson save
     if (lessonSaveTimers.current[lessonId]) {
-      window.clearTimeout(lessonSaveTimers.current[lessonId]);
+      clearTimeout(lessonSaveTimers.current[lessonId]);
     }
-    lessonSaveTimers.current[lessonId] = window.setTimeout(async () => {
+    lessonSaveTimers.current[lessonId] = setTimeout(async () => {
       try {
-        const snapshot = await new Promise<any>((resolve) => {
-          setCourse((current: any) => { resolve(current); return current; });
+        const snapshot = await new Promise<CourseData | null>((resolve) => {
+          setCourse((current: CourseData | null) => { resolve(current); return current; });
         });
         const lesson = snapshot?.modules
           ?.flatMap((m: ModuleWithLessons) => m.lessons)
-          ?.find((l: any) => l.id === lessonId);
+          ?.find((l: LessonData) => l.id === lessonId);
         if (!lesson) return;
         await fetch(`/api/courses/${courseId}/edit`, {
           method: "POST",
@@ -226,12 +248,12 @@ export function CourseEditor({ courseId }: CourseEditorProps) {
                 value={module.title}
                 onChange={(event) => {
                   const value = event.target.value;
-                  setCourse((current: any) => ({
+                  setCourse((current: CourseData | null) => current ? ({
                     ...current,
-                    modules: current.modules.map((item: ModuleWithLessons) =>
+                    modules: current.modules?.map((item: ModuleWithLessons) =>
                       item.id === module.id ? { ...item, title: value } : item
                     )
-                  }));
+                  }) : null);
                 }}
                 onBlur={(event) => {
                   void saveModuleTitle(module.id, event.target.value);
@@ -240,7 +262,7 @@ export function CourseEditor({ courseId }: CourseEditorProps) {
               <Button type="button" variant="secondary" onClick={() => createLesson(module.id)}>Add Lesson</Button>
             </div>
             <div className="space-y-3">
-              {(module.lessons ?? []).map((lesson: any) => (
+              {(module.lessons ?? []).map((lesson: LessonData) => (
                 <div key={lesson.id} className="rounded-3xl border border-slate-200 p-4">
                   <div className="flex items-center justify-between gap-3">
                     <input className="w-full rounded-2xl border border-slate-200 px-3 py-2 text-sm" value={lesson.title} onChange={(event) => updateLessonField(module.id, lesson.id, "title", event.target.value)} />

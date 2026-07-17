@@ -2,7 +2,7 @@ import { prisma } from "./prisma";
 import { complete } from "./ai";
 import { incrementUsage } from "./billing";
 import { z } from "zod";
-import type { LearningAsset } from "@prisma/client";
+
 
 export const learningAssetTypes = [
   "quiz",

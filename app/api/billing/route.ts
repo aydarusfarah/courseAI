@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { ensurePrismaUser } from "../../../lib/auth";
 import { getPlanSnapshot, getPlanUsageSummary } from "../../../lib/billing";
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const user = await ensurePrismaUser();
     const snapshot = await getPlanSnapshot(user.id);

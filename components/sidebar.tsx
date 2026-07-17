@@ -45,7 +45,7 @@ export function Sidebar() {
           const data = await response.json();
           setBilling(data);
         }
-      } catch (err) {
+      } catch {
         // ignore
       }
     }

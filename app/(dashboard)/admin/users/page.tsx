@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: "Admin Users | CourseAI"
 };
 
-export default async function AdminUsersPage(props: any) {
+export default async function AdminUsersPage(props: { searchParams?: Record<string, string | undefined> }) {
   const searchParams = props?.searchParams ?? {};
   const pageNum = Number(searchParams?.page ?? "1");
   const { users, total, page, perPage } = await getAdminUsers({ page: pageNum, perPage: 50, search: searchParams?.search });

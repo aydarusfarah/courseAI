@@ -4,12 +4,12 @@ import { prisma } from "../../../../lib/prisma";
 
 export async function GET(request: NextRequest) {
   try {
-    const admin = await requireAdmin();
+    const _admin = await requireAdmin();
     const searchParams = request.nextUrl.searchParams;
     const search = searchParams.get("search") ?? "";
     const role = searchParams.get("role") ?? "all";
 
-    const where: any = {};
+    const where: import("@prisma/client").Prisma.UserWhereInput = {};
     if (search) {
       where.OR = [{ email: { contains: search, mode: "insensitive" } }, { name: { contains: search, mode: "insensitive" } }];
     }

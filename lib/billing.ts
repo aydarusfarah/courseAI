@@ -60,7 +60,7 @@ export async function getOrCreateCustomer(userId: string, email: string) {
     try {
       const stripeSub = await stripe.subscriptions.retrieve(subscription.stripeId);
       if (stripeSub?.customer && typeof stripeSub.customer === "string") return stripeSub.customer as string;
-    } catch (e) {
+    } catch {
       // ignore and create a customer
     }
   }
@@ -100,7 +100,7 @@ export async function createBillingPortalSession(userId: string, returnUrl: stri
     try {
       const stripeSub = await stripe.subscriptions.retrieve(subscription.stripeId);
       if (stripeSub?.customer && typeof stripeSub.customer === "string") customerId = stripeSub.customer as string;
-    } catch (e) {
+    } catch {
       // ignore
     }
   }
@@ -168,7 +168,7 @@ export async function getUsageCount(userId: string, type: UsageType) {
   try {
     const result = await prisma.usage.aggregate({ where: { userId, type }, _sum: { count: true } });
     return result._sum.count ?? 0;
-  } catch (e) {
+  } catch {
     const record = await prisma.usage.findFirst({ where: { userId, type } });
     return record?.count ?? 0;
   }
@@ -262,7 +262,7 @@ export async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Se
 }
 
 export async function handleInvoicePaid(invoice: Stripe.Invoice) {
-  const customerId = invoice.customer;
+  const _customerId = invoice.customer;
   const stripeSubscriptionId = invoice.subscription;
   if (!stripeSubscriptionId || typeof stripeSubscriptionId !== "string") return;
   const subscription = await prisma.subscription.findFirst({ where: { stripeId: stripeSubscriptionId } });

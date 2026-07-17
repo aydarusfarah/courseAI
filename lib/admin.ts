@@ -1,4 +1,4 @@
-import { ensurePrismaUser, AuthError } from "./auth";
+import { ensurePrismaUser } from "./auth";
 import { prisma } from "./prisma";
 
 export class AdminError extends Error {
@@ -44,7 +44,7 @@ export async function getSystemSettings() {
   return settings;
 }
 
-export async function updateSystemSettings(data: Partial<any>) {
+export async function updateSystemSettings(data: Partial<import("@prisma/client").SystemSettings>) {
   const settings = await getSystemSettings();
   return prisma.systemSettings.update({ where: { id: settings.id }, data });
 }
@@ -117,7 +117,7 @@ export async function getAdminDashboardTrends() {
 export async function getAdminUsers(params?: { search?: string; role?: string; status?: string; page?: number; perPage?: number }) {
   const page = params?.page ?? 1;
   const perPage = params?.perPage ?? 20;
-  const where: any = {};
+  const where: import("@prisma/client").Prisma.UserWhereInput = {};
 
   if (params?.search) {
     where.OR = [
@@ -159,7 +159,7 @@ export async function getAdminUsers(params?: { search?: string; role?: string; s
 export async function getAdminCourses(params?: { search?: string; status?: string; page?: number; perPage?: number }) {
   const page = params?.page ?? 1;
   const perPage = params?.perPage ?? 20;
-  const where: any = { deletedAt: null };
+  const where: import("@prisma/client").Prisma.CourseWhereInput = { deletedAt: null };
 
   if (params?.search) {
     where.OR = [
@@ -218,7 +218,7 @@ export async function getAdminUsageData() {
 export async function getAdminLogs(params?: { category?: string; page?: number; perPage?: number }) {
   const page = params?.page ?? 1;
   const perPage = params?.perPage ?? 20;
-  const where: any = {};
+  const where: import("@prisma/client").Prisma.AdminLogWhereInput = {};
   if (params?.category && params.category !== "all") {
     where.category = params.category;
   }
@@ -235,7 +235,7 @@ export async function getAdminLogs(params?: { category?: string; page?: number; 
     ]);
 
     return { logs, total, page, perPage };
-  } catch (err) {
+  } catch {
     return { logs: [], total: 0, page, perPage };
   }
 }
@@ -243,7 +243,7 @@ export async function getAdminLogs(params?: { category?: string; page?: number; 
 export async function getAdminPayments(params?: { search?: string; status?: string; page?: number; perPage?: number }) {
   const page = params?.page ?? 1;
   const perPage = params?.perPage ?? 20;
-  const where: any = {};
+  const where: import("@prisma/client").Prisma.PaymentWhereInput = {};
 
   if (params?.search) {
     where.OR = [
@@ -275,7 +275,7 @@ export async function getAdminPayments(params?: { search?: string; status?: stri
 export async function getAdminSubscriptions(params?: { search?: string; status?: string; plan?: string; page?: number; perPage?: number }) {
   const page = params?.page ?? 1;
   const perPage = params?.perPage ?? 20;
-  const where: any = {};
+  const where: import("@prisma/client").Prisma.SubscriptionWhereInput = {};
 
   if (params?.search) {
     where.OR = [
@@ -306,7 +306,7 @@ export async function getAdminSubscriptions(params?: { search?: string; status?:
 }
 
 export async function getAdminPromptTemplates(params?: { search?: string; status?: string }) {
-  const where: any = {};
+  const where: import("@prisma/client").Prisma.PromptTemplateWhereInput = {};
   if (params?.search) {
     where.OR = [
       { name: { contains: params.search, mode: "insensitive" } },
@@ -333,7 +333,7 @@ export async function getFeatureFlags() {
 export async function getFeedbackList(params?: { status?: string; page?: number; perPage?: number }) {
   const page = params?.page ?? 1;
   const perPage = params?.perPage ?? 20;
-  const where: any = {};
+  const where: import("@prisma/client").Prisma.FeedbackWhereInput = {};
 
   if (params?.status && params.status !== "all") {
     where.status = params.status;

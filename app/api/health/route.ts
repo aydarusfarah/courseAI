@@ -17,7 +17,6 @@ interface HealthStatus {
 }
 
 export async function GET(): Promise<NextResponse<HealthStatus>> {
-  const start = Date.now();
   let dbStatus: "ok" | "error" = "ok";
 
   try {

@@ -44,7 +44,7 @@ const TYPES: TemplateType[] = [
 
 const emptyForm = { name: "", description: "", type: "LESSON" as TemplateType, prompt: "" };
 
-export default function PromptTemplateManager({ initialTemplates, adminId }: Props) {
+export default function PromptTemplateManager({ initialTemplates, adminId: _adminId }: Props) {
   const [templates, setTemplates] = useState<Template[]>(initialTemplates);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");

@@ -24,6 +24,7 @@ export function LearningSuite({ courseId }: LearningSuiteProps) {
 
   useEffect(() => {
     void loadAssets();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseId]);
 
   async function loadAssets() {
