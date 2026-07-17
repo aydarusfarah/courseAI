@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "../button";
 import { Card } from "../card";
 import { Input } from "../ui/input";
@@ -30,6 +30,7 @@ export function CourseEditor({ courseId }: CourseEditorProps) {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<"delete-module" | "delete-lesson" | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const lessonSaveTimers = useRef<Record<string, ReturnType<typeof window.setTimeout>>>({});
 
   useEffect(() => {
     let active = true;
@@ -96,6 +97,34 @@ export function CourseEditor({ courseId }: CourseEditorProps) {
       modules: current.modules.map((module: ModuleWithLessons) => (module.id === moduleId ? { ...module, lessons: module.lessons.map((lesson: any) => (lesson.id === lessonId ? { ...lesson, [field]: value } : lesson)) } : module))
     }));
     setDirty(true);
+
+    // Debounced per-lesson save
+    if (lessonSaveTimers.current[lessonId]) {
+      window.clearTimeout(lessonSaveTimers.current[lessonId]);
+    }
+    lessonSaveTimers.current[lessonId] = window.setTimeout(async () => {
+      try {
+        const snapshot = await new Promise<any>((resolve) => {
+          setCourse((current: any) => { resolve(current); return current; });
+        });
+        const lesson = snapshot?.modules
+          ?.flatMap((m: ModuleWithLessons) => m.lessons)
+          ?.find((l: any) => l.id === lessonId);
+        if (!lesson) return;
+        await fetch(`/api/courses/${courseId}/edit`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "update-lesson",
+            moduleId,
+            lessonId,
+            payload: { title: lesson.title, content: lesson.content, examples: lesson.examples, exercises: lesson.exercises }
+          })
+        });
+      } catch {
+        // silent fail – user will see next full save error if any
+      }
+    }, 800);
   };
 
   async function createModule() {

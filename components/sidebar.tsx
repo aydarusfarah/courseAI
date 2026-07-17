@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import type { Route } from "next";
 import { clsx } from "clsx";
 import Link from "next/link";
@@ -31,6 +32,26 @@ const adminItems: { label: string; href: Route; icon: React.ComponentType<React.
 
 export function Sidebar() {
   const pathname = usePathname();
+  const [billing, setBilling] = useState<{
+    snapshot?: { plan: string; active: boolean; status: string; cancelAtPeriodEnd: boolean };
+    usage?: { aiCount: number; aiRemaining: number | string; limits: { aiLimit: number } };
+  } | null>(null);
+
+  useEffect(() => {
+    async function fetchBilling() {
+      try {
+        const response = await fetch("/api/billing");
+        if (response.ok) {
+          const data = await response.json();
+          setBilling(data);
+        }
+      } catch (err) {
+        // ignore
+      }
+    }
+    void fetchBilling();
+  }, []);
+
 
   return (
     <aside className="hidden w-80 shrink-0 border-r border-slate-200 bg-white/95 p-5 xl:block">
@@ -76,8 +97,18 @@ export function Sidebar() {
           </div>
           <div className="mt-4 rounded-2xl bg-white p-4 shadow-sm">
             <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Subscription</p>
-            <p className="mt-2 text-sm font-semibold text-slate-900">Premium</p>
-            <p className="text-xs text-slate-600">Renewal in 24 days</p>
+            <p className="mt-2 text-sm font-semibold text-slate-900">
+              {billing ? (billing.snapshot?.plan === "PRO" ? "Pro" : "Free") : "Loading…"}
+            </p>
+            <p className="text-xs text-slate-600">
+              {billing ? (
+                billing.snapshot?.plan === "PRO" ? (
+                  billing.snapshot.cancelAtPeriodEnd ? "Cancelling at period end" : "Active subscription"
+                ) : (
+                  `${billing.usage?.aiRemaining === Number.POSITIVE_INFINITY ? "∞" : (billing.usage?.aiRemaining ?? 0)} AI requests left`
+                )
+              ) : "Checking status…"}
+            </p>
           </div>
         </div>
 
@@ -103,9 +134,11 @@ export function Sidebar() {
           </div>
         </div>
 
-        <Button variant="secondary" className="w-full">
-          Upgrade plan
-        </Button>
+        <Link href="/billing" className="w-full block">
+          <Button variant="secondary" className="w-full">
+            {billing?.snapshot?.plan === "PRO" ? "Manage billing" : "Upgrade plan"}
+          </Button>
+        </Link>
       </div>
     </aside>
   );
