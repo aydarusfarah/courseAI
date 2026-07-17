@@ -1,5 +1,6 @@
 "use client";
 
+import type { Route } from "next";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -45,7 +46,7 @@ export default function HomePage() {
               >
                 Open dashboard
               </Link>
-              <Link href="/auth/sign-in" className="inline-flex items-center justify-center rounded-full border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+              <Link href={"/auth/sign-in" as Route} className="inline-flex items-center justify-center rounded-full border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
                 Sign in
               </Link>
             </motion.div>

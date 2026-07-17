@@ -1,5 +1,6 @@
 "use client";
 
+import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import { SignOutButton, useUser } from "@clerk/nextjs";
 import { Button } from "./button";
@@ -24,7 +25,7 @@ export function UserMenu() {
           </SignOutButton>
         </>
       ) : (
-        <Button variant="outline" onClick={() => router.push("/auth/sign-in")}>Sign in</Button>
+        <Button variant="outline" onClick={() => router.push("/auth/sign-in" as Route)}>Sign in</Button>
       )}
     </div>
   );
