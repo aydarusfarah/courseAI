@@ -52,7 +52,7 @@ const nextConfig = {
             value: [
               "default-src 'self'",
               // Next.js inline scripts + Clerk + PostHog
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.courseai.app https://js.clerk.dev https://*.clerk.accounts.dev https://app.posthog.com https://cdn.jsdelivr.net",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.clerk.dev https://*.clerk.accounts.dev https://app.posthog.com https://cdn.jsdelivr.net",
               // Styles: self + inline (Tiptap, Tailwind)
               "style-src 'self' 'unsafe-inline'",
               // Images: self + data URIs + Unsplash + Clerk avatars
@@ -60,7 +60,7 @@ const nextConfig = {
               // Fonts: self
               "font-src 'self' data:",
               // API connections: self + Clerk + Stripe + PostHog + Sentry + OpenAI
-              "connect-src 'self' https://*.clerk.accounts.dev https://clerk.courseai.app https://api.stripe.com https://app.posthog.com https://o*.ingest.sentry.io https://api.openai.com wss://*.clerk.accounts.dev",
+              "connect-src 'self' https://*.clerk.accounts.dev https://api.stripe.com https://app.posthog.com https://o*.ingest.sentry.io https://api.openai.com wss://*.clerk.accounts.dev",
               // Frames: Stripe
               "frame-src https://js.stripe.com https://hooks.stripe.com",
               // Workers for Sentry
