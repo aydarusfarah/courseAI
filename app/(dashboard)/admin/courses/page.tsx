@@ -11,17 +11,17 @@ export const metadata: Metadata = {
   title: "Admin Courses | CourseAI"
 };
 
-export default async function AdminCoursesPage(props: { searchParams?: Record<string, string | undefined> }) {
-  const searchParams = props?.searchParams ?? {};
-  const page = Number(searchParams?.page ?? "1");
-  const { courses, total, page: currentPage, perPage } = await getAdminCourses({ page, perPage: 50, search: searchParams?.search });
+export default async function AdminCoursesPage(props: { searchParams?: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  const resolvedParams = await (props.searchParams ?? Promise.resolve({} as { [key: string]: string | string[] | undefined }));
+  const page = Number(resolvedParams?.page ?? "1");
+  const { courses, total, page: currentPage, perPage } = await getAdminCourses({ page, perPage: 50, search: resolvedParams?.search as string | undefined });
 
   return (
     <div className="space-y-8">
       <SectionHeader title="Courses" description="Manage platform courses: archive, restore, delete, or duplicate." />
       <Card>
         <form method="get" className="mb-4 flex gap-2">
-          <input name="search" defaultValue={searchParams?.search ?? ""} placeholder="Search courses" className="w-full rounded-md border px-3 py-2" />
+          <input name="search" defaultValue={resolvedParams?.search ?? ""} placeholder="Search courses" className="w-full rounded-md border px-3 py-2" />
           <button type="submit" className="rounded-md bg-slate-900 px-3 py-2 text-white">Search</button>
         </form>
         <Table>

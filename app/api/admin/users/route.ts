@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       where.OR = [{ email: { contains: search, mode: "insensitive" } }, { name: { contains: search, mode: "insensitive" } }];
     }
     if (role !== "all") {
-      where.role = role;
+      where.role = role as import("@prisma/client").Role;
     }
 
     const users = await prisma.user.findMany({

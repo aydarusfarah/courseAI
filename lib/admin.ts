@@ -127,7 +127,7 @@ export async function getAdminUsers(params?: { search?: string; role?: string; s
   }
 
   if (params?.role && params.role !== "all") {
-    where.role = params.role.toUpperCase();
+    where.role = params.role.toUpperCase() as import("@prisma/client").Role;
   }
 
   // status filters for suspended users are not supported by current schema
@@ -174,7 +174,7 @@ export async function getAdminCourses(params?: { search?: string; status?: strin
       delete where.deletedAt;
       Object.assign(where, { archivedAt: { not: null } });
     } else {
-      where.status = params.status.toUpperCase();
+      where.status = params.status.toUpperCase() as import("@prisma/client").CourseStatus;
     }
   }
 
@@ -248,7 +248,6 @@ export async function getAdminPayments(params?: { search?: string; status?: stri
   if (params?.search) {
     where.OR = [
       { stripePaymentId: { contains: params.search, mode: "insensitive" } },
-      { description: { contains: params.search, mode: "insensitive" } },
       { user: { email: { contains: params.search, mode: "insensitive" } } },
       { user: { name: { contains: params.search, mode: "insensitive" } } }
     ];
@@ -286,7 +285,7 @@ export async function getAdminSubscriptions(params?: { search?: string; status?:
   }
 
   if (params?.status && params.status !== "all") {
-    where.status = params.status.toUpperCase();
+    where.status = params.status.toUpperCase() as import("@prisma/client").SubscriptionStatus;
   }
 
   // plan filtering not supported by current DB schema

@@ -200,6 +200,8 @@ export function CourseEditor({ courseId }: CourseEditorProps) {
       </div>
     );
   }
+  
+  if (!course) return null;
 
   return (
     <div className="space-y-6">
