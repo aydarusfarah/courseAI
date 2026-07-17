@@ -1,15 +1,15 @@
 import { clsx } from "clsx";
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: "default" | "bordered";
+  variant?: "default" | "bordered" | "glow";
 }
 
 export function Card({ className, variant = "default", ...props }: CardProps) {
   return (
     <div
       className={clsx(
-        "rounded-3xl bg-white p-6 shadow-soft",
-        variant === "bordered" && "border border-slate-200",
+        "rounded-2xl bg-white p-6 shadow-card border border-slate-200/80 transition-shadow duration-200",
+        variant === "glow" && "hover:shadow-glow",
         className
       )}
       {...props}

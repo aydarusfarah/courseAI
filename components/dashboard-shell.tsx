@@ -1,100 +1,128 @@
 "use client";
 
-import type { Route } from "next";
 import { ReactNode, useState } from "react";
 import Link from "next/link";
 import { Sidebar } from "./sidebar";
 import { UserMenu } from "./user-menu";
-import { Button } from "./button";
-import { Search, Moon, Sun, Bell, Menu } from "lucide-react";
-import { Dialog } from "./ui/dialog";
+import { Search, Moon, Sun, Bell, Menu, X, Zap } from "lucide-react";
 import { Input } from "./ui/input";
-
-const breadcrumbs: { label: string; href: Route }[] = [
-  { label: "Home", href: "/dashboard" as Route },
-  { label: "Overview", href: "/dashboard" as Route }
-];
 
 export function DashboardShell({ children }: { children: ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   return (
-    <div className={`min-h-screen ${theme === "dark" ? "dark bg-slate-950 text-slate-100" : "bg-slate-50 text-slate-950"}`}>
-      <div className="border-b border-slate-200 bg-white/95 px-4 py-4 shadow-sm sticky top-0 z-40 backdrop-blur backdrop-saturate-150 dark:bg-slate-950/90 dark:border-slate-800">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" className="md:hidden" onClick={() => setDrawerOpen(true)}>
-              <Menu className="h-5 w-5" />
-            </Button>
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">CourseAI</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Admin dashboard</p>
+    <div className={`flex h-screen overflow-hidden ${theme === "dark" ? "dark bg-slate-950 text-slate-100" : "bg-slate-100 text-slate-950"}`}>
+
+      {/* ── Sidebar (desktop) ── */}
+      <Sidebar />
+
+      {/* ── Mobile drawer overlay ── */}
+      {drawerOpen && (
+        <div className="fixed inset-0 z-50 flex xl:hidden">
+          <div
+            className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setDrawerOpen(false)}
+          />
+          <div className="relative z-10 flex w-72 flex-col bg-white shadow-2xl">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-gradient shadow-glow">
+                  <Zap className="h-3.5 w-3.5 text-white" />
+                </div>
+                <span className="text-sm font-bold text-slate-900">CourseAI</span>
+              </div>
+              <button
+                onClick={() => setDrawerOpen(false)}
+                className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-all"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              <Sidebar />
             </div>
           </div>
-
-          <div className="hidden md:flex flex-1 items-center gap-3 rounded-3xl border border-slate-200 bg-slate-100 px-4 py-3 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            <Search className="h-4 w-4 text-slate-500" />
-            <Input placeholder="Search courses, requests, reports..." className="border-0 bg-transparent px-0 focus-visible:ring-0" />
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" className="hidden sm:inline-flex" onClick={() => setTheme(theme === "light" ? "dark" : "light")}> 
-              {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-            </Button>
-            <Button variant="ghost" className="hidden sm:inline-flex">
-              <Bell className="h-5 w-5" />
-            </Button>
-            <UserMenu />
-          </div>
         </div>
-      </div>
+      )}
 
-      <div className="flex">
-        <Sidebar />
-        <main className="flex-1 p-6 md:p-8 xl:p-10">
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-3xl bg-white/95 border border-slate-200 p-5 shadow-sm dark:bg-slate-900 dark:border-slate-800">
-            <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">Breadcrumbs</p>
-              <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-                {breadcrumbs.map((crumb, index) => (
-                  <span key={crumb.href} className="inline-flex items-center gap-2">
-                    <Link href={crumb.href} className="font-medium text-brand-600 hover:underline dark:text-brand-400">{crumb.label}</Link>
-                    {index < breadcrumbs.length - 1 && <span>/</span>}
-                  </span>
-                ))}
+      {/* ── Right column: topbar + scrollable content ── */}
+      <div className="flex flex-1 flex-col overflow-hidden">
+
+        {/* ── Topbar ── */}
+        <header className="shrink-0 border-b border-slate-200/80 bg-white/95 px-4 py-3 shadow-sm backdrop-blur backdrop-saturate-150 dark:bg-slate-950/90 dark:border-slate-800 z-30">
+          <div className="flex items-center gap-3">
+            <button
+              className="rounded-xl p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-all duration-200 xl:hidden"
+              onClick={() => setDrawerOpen(true)}
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+
+            {/* Search bar */}
+            <div className="hidden md:flex flex-1 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 transition-all duration-200 focus-within:border-violet-300 focus-within:bg-white focus-within:shadow-glow">
+              <Search className="h-4 w-4 shrink-0 text-slate-400" />
+              <Input
+                placeholder="Search courses, requests, reports…"
+                className="border-0 bg-transparent p-0 text-sm focus-visible:ring-0 placeholder:text-slate-400"
+              />
+            </div>
+
+            <div className="ml-auto flex items-center gap-2">
+              <button
+                className="hidden sm:flex h-9 w-9 items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-all duration-200"
+                onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+              >
+                {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+              </button>
+              <button className="hidden sm:flex h-9 w-9 items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-all duration-200 relative">
+                <Bell className="h-4 w-4" />
+                <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-violet-500 ring-2 ring-white" />
+              </button>
+              <UserMenu />
+            </div>
+          </div>
+        </header>
+
+        {/* ── Scrollable page content ── */}
+        <main className="flex-1 overflow-y-auto">
+          <div className="mx-auto max-w-7xl px-5 py-6 md:px-8 md:py-8 space-y-6">
+
+            {/* ── Breadcrumb bar ── */}
+            <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white px-5 py-4 shadow-card">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-slate-400">Navigation</p>
+                <div className="mt-1 flex flex-wrap items-center gap-1.5 text-sm">
+                  <Link href="/dashboard" className="font-medium text-violet-600 hover:text-violet-700 transition-colors">Home</Link>
+                  <span className="text-slate-300">/</span>
+                  <span className="text-slate-500">Overview</span>
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Link
+                  href="/generator"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 hover:border-slate-300 transition-all duration-200"
+                >
+                  New course
+                </Link>
+                <button className="inline-flex items-center gap-1.5 rounded-xl bg-brand-gradient px-4 py-2 text-sm font-semibold text-white shadow-glow hover:opacity-90 transition-all duration-200">
+                  Invite team
+                </button>
               </div>
             </div>
-            <div className="flex flex-wrap items-center gap-3">
-              <Button variant="secondary">New course</Button>
-              <Button variant="secondary">Invite team</Button>
-            </div>
+
+            {children}
+
+            {/* ── Footer ── */}
+            <footer className="rounded-2xl border border-slate-200/80 bg-white px-6 py-4 shadow-card">
+              <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between text-xs text-slate-400">
+                <p>CourseAI © 2026 — Built for modern course creators.</p>
+                <p>Version 0.1.0</p>
+              </div>
+            </footer>
           </div>
-
-          {children}
-
-          <footer className="mt-10 rounded-3xl border border-slate-200 bg-white/95 p-6 text-sm text-slate-600 shadow-sm dark:bg-slate-900 dark:border-slate-800 dark:text-slate-400">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <p>CourseAI © 2026. Built for modern course creators.</p>
-              <p>Version 0.1.0</p>
-            </div>
-          </footer>
         </main>
       </div>
-
-      <Dialog open={drawerOpen} onOpenChange={setDrawerOpen}>
-        <div className="fixed inset-0 z-50 bg-slate-950/80 p-6">
-          <div className="flex items-center justify-between">
-            <p className="text-lg font-semibold text-white">Navigation</p>
-            <Button variant="ghost" onClick={() => setDrawerOpen(false)}>
-              Close
-            </Button>
-          </div>
-          <div className="mt-8">
-            <Sidebar />
-          </div>
-        </div>
-      </Dialog>
     </div>
   );
 }
