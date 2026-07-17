@@ -51,15 +51,15 @@ const nextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.clerk.dev https://*.clerk.accounts.dev https://clerk.courseai.app https://clerk.courseai.com",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.clerk.dev https://*.clerk.accounts.dev https://*.clerk.com https://clerk.courseai.app https://clerk.courseai.com",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob: https://images.unsplash.com https://img.clerk.com",
               "font-src 'self' data:",
-              "connect-src 'self' https://*.clerk.accounts.dev https://clerk.courseai.app https://clerk.courseai.com https://api.stripe.com https://api.posthog.com https://o.ingest.sentry.io",
-              "frame-src https://js.stripe.com https://hooks.stripe.com",
+              "connect-src 'self' https://*.clerk.accounts.dev https://*.clerk.com https://clerk.courseai.app https://clerk.courseai.com https://api.stripe.com https://api.posthog.com https://o.ingest.sentry.io",
+              "frame-src https://js.stripe.com https://hooks.stripe.com https://*.clerk.accounts.dev https://*.clerk.com",
               "worker-src 'self' blob:",
               "base-uri 'self'",
-              "form-action 'self'"
+              "form-action 'self' https://*.clerk.accounts.dev https://*.clerk.com"
             ].join("; ")
           }
         ]

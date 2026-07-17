@@ -9,7 +9,6 @@ interface ClerkProviderProps {
 export function ClerkProviderRoot({ children }: ClerkProviderProps) {
   return (
     <ClerkProvider
-      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
       signInUrl="/auth/sign-in"
       signUpUrl="/auth/sign-up"
     >
