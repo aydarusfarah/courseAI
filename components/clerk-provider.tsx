@@ -12,8 +12,6 @@ export function ClerkProviderRoot({ children }: ClerkProviderProps) {
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
       signInUrl="/auth/sign-in"
       signUpUrl="/auth/sign-up"
-      signInFallbackRedirectUrl="/dashboard"
-      signUpFallbackRedirectUrl="/dashboard"
     >
       {children}
     </ClerkProvider>
