@@ -51,19 +51,12 @@ const nextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              // Next.js inline scripts + Clerk + PostHog
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.clerk.dev https://*.clerk.accounts.dev https://app.posthog.com https://cdn.jsdelivr.net",
-              // Styles: self + inline (Tiptap, Tailwind)
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.clerk.dev https://*.clerk.accounts.dev https://clerk.courseai.app",
               "style-src 'self' 'unsafe-inline'",
-              // Images: self + data URIs + Unsplash + Clerk avatars
               "img-src 'self' data: blob: https://images.unsplash.com https://img.clerk.com",
-              // Fonts: self
               "font-src 'self' data:",
-              // API connections: self + Clerk + Stripe + PostHog + Sentry + OpenAI
-              "connect-src 'self' https://*.clerk.accounts.dev https://api.stripe.com https://app.posthog.com https://o*.ingest.sentry.io https://api.openai.com wss://*.clerk.accounts.dev",
-              // Frames: Stripe
+              "connect-src 'self' https://*.clerk.accounts.dev https://clerk.courseai.app https://api.stripe.com https://api.posthog.com https://o.ingest.sentry.io",
               "frame-src https://js.stripe.com https://hooks.stripe.com",
-              // Workers for Sentry
               "worker-src 'self' blob:",
               "base-uri 'self'",
               "form-action 'self'"
