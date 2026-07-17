@@ -9,7 +9,7 @@ export default function SignUpPage() {
         <h1 className="text-2xl font-semibold text-slate-950">Create your account</h1>
         <p className="mt-2 text-sm text-slate-600">Join CourseAI and start generating professional courses with AI.</p>
         <div className="mt-8">
-          <SignUp path="/auth/sign-up" routing="path" />
+          <SignUp path="/auth/sign-up" routing="path" fallbackRedirectUrl="/dashboard" />
         </div>
       </div>
     </main>

@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import { ClerkProviderRoot } from "../../components/clerk-provider";
-import "../globals.css";
 
 export const metadata: Metadata = {
   title: "CourseAI — AI Course Generator",
@@ -9,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
-  return <ClerkProviderRoot>{children}</ClerkProviderRoot>;
+  return <>{children}</>;
 }

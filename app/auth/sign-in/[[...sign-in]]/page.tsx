@@ -9,7 +9,7 @@ export default function SignInPage() {
         <h1 className="text-2xl font-semibold text-slate-950">Welcome back</h1>
         <p className="mt-2 text-sm text-slate-600">Sign in to CourseAI and continue building your course projects.</p>
         <div className="mt-8">
-          <SignIn path="/auth/sign-in" routing="path" />
+          <SignIn path="/auth/sign-in" routing="path" fallbackRedirectUrl="/dashboard" />
         </div>
       </div>
     </main>
