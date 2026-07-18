@@ -1,40 +1,80 @@
 "use client";
 
-import { ReactNode, useState } from "react";
-import Link from "next/link";
+import { ReactNode, useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Sidebar } from "./sidebar";
 import { UserMenu } from "./user-menu";
-import { Search, Moon, Sun, Bell, Menu, X, Zap } from "lucide-react";
 import { Input } from "./ui/input";
+import {
+  Search, Moon, Sun, Bell, Menu, X, Zap,
+  ChevronRight
+} from "lucide-react";
+import { clsx } from "clsx";
+
+const routeLabels: Record<string, string> = {
+  "/dashboard":           "Overview",
+  "/courses":             "My Courses",
+  "/generator":           "AI Generator",
+  "/templates":           "Templates",
+  "/editor":              "Course Editor",
+  "/exports":             "Exports",
+  "/analytics":           "Analytics",
+  "/billing":             "Billing",
+  "/profile":             "Profile",
+  "/settings":            "Settings",
+  "/admin":               "Admin",
+  "/admin/users":         "Users",
+  "/admin/payments":      "Payments",
+  "/admin/subscriptions": "Subscriptions",
+  "/admin/usage":         "AI Usage",
+  "/admin/logs":          "Audit Logs"
+};
 
 export function DashboardShell({ children }: { children: ReactNode }) {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [dark, setDark]           = useState(false);
+  const pathname = usePathname();
+  const pageLabel = routeLabels[pathname] ?? "Dashboard";
+
+  // Apply dark class to <html>
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", dark);
+  }, [dark]);
+
+  // Close drawer on route change
+  useEffect(() => { setDrawerOpen(false); }, [pathname]);
 
   return (
-    <div className={`flex h-screen overflow-hidden ${theme === "dark" ? "dark bg-slate-950 text-slate-100" : "bg-slate-100 text-slate-950"}`}>
+    <div className={clsx(
+      "flex h-screen overflow-hidden",
+      dark ? "dark" : "",
+      "bg-slate-100 dark:bg-[#0B1220]"
+    )}>
 
-      {/* ── Sidebar (desktop) ── */}
+      {/* ── Desktop sidebar ── */}
       <Sidebar />
 
-      {/* ── Mobile drawer overlay ── */}
+      {/* ── Mobile drawer ── */}
       {drawerOpen && (
         <div className="fixed inset-0 z-50 flex xl:hidden">
-          <div
-            className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm transition-opacity"
+          {/* Backdrop */}
+          <button
+            className="absolute inset-0 bg-slate-950/50 backdrop-blur-sm"
             onClick={() => setDrawerOpen(false)}
+            aria-label="Close menu"
           />
-          <div className="relative z-10 flex w-72 flex-col bg-white shadow-2xl">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+          {/* Panel */}
+          <div className="relative z-10 flex w-64 flex-col bg-white shadow-xl dark:bg-slate-950 animate-fade-up">
+            <div className="flex items-center justify-between border-b border-slate-100 px-4 py-4 dark:border-slate-800">
               <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-gradient shadow-glow">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-gradient">
                   <Zap className="h-3.5 w-3.5 text-white" />
                 </div>
-                <span className="text-sm font-bold text-slate-900">CourseAI</span>
+                <span className="text-sm font-bold text-slate-900 dark:text-white">CourseAI</span>
               </div>
               <button
                 onClick={() => setDrawerOpen(false)}
-                className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-all"
+                className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -46,79 +86,84 @@ export function DashboardShell({ children }: { children: ReactNode }) {
         </div>
       )}
 
-      {/* ── Right column: topbar + scrollable content ── */}
+      {/* ── Content column ── */}
       <div className="flex flex-1 flex-col overflow-hidden">
 
         {/* ── Topbar ── */}
-        <header className="shrink-0 border-b border-slate-200/80 bg-white/95 px-4 py-3 shadow-sm backdrop-blur backdrop-saturate-150 dark:bg-slate-950/90 dark:border-slate-800 z-30">
+        <header className={clsx(
+          "glass shrink-0 z-30",
+          "border-b border-slate-200/80 dark:border-slate-800",
+          "px-4 py-3"
+        )}>
           <div className="flex items-center gap-3">
+            {/* Mobile menu button */}
             <button
-              className="rounded-xl p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-all duration-200 xl:hidden"
               onClick={() => setDrawerOpen(true)}
+              className="flex h-8 w-8 items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-all xl:hidden dark:hover:bg-slate-800"
+              aria-label="Open menu"
             >
-              <Menu className="h-5 w-5" />
+              <Menu className="h-4 w-4" />
             </button>
 
-            {/* Search bar */}
-            <div className="hidden md:flex flex-1 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 transition-all duration-200 focus-within:border-violet-300 focus-within:bg-white focus-within:shadow-glow">
-              <Search className="h-4 w-4 shrink-0 text-slate-400" />
+            {/* Breadcrumb */}
+            <div className="hidden items-center gap-1.5 text-sm xl:flex">
+              <span className="text-slate-400 dark:text-slate-600">Dashboard</span>
+              <ChevronRight className="h-3.5 w-3.5 text-slate-300 dark:text-slate-700" />
+              <span className="font-semibold text-slate-700 dark:text-slate-300">{pageLabel}</span>
+            </div>
+
+            {/* Search */}
+            <div className={clsx(
+              "hidden md:flex flex-1 items-center gap-2 max-w-md ml-4",
+              "rounded-xl border border-slate-200 bg-slate-50/80 px-3 py-1.5",
+              "transition-all duration-150",
+              "focus-within:border-brand-400 focus-within:bg-white focus-within:shadow-glow-sm",
+              "dark:border-slate-700 dark:bg-slate-800/60 dark:focus-within:bg-slate-800"
+            )}>
+              <Search className="h-3.5 w-3.5 shrink-0 text-slate-400" />
               <Input
-                placeholder="Search courses, requests, reports…"
-                className="border-0 bg-transparent p-0 text-sm focus-visible:ring-0 placeholder:text-slate-400"
+                placeholder="Search courses, templates, reports…"
+                className="h-auto border-0 bg-transparent p-0 text-sm ring-0 shadow-none focus:ring-0 dark:bg-transparent"
               />
             </div>
 
-            <div className="ml-auto flex items-center gap-2">
+            {/* Right actions */}
+            <div className="ml-auto flex items-center gap-1.5">
               <button
-                className="hidden sm:flex h-9 w-9 items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-all duration-200"
-                onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+                onClick={() => setDark(!dark)}
+                className="flex h-8 w-8 items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-all dark:text-slate-400 dark:hover:bg-slate-800"
+                aria-label="Toggle dark mode"
               >
-                {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+                {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </button>
-              <button className="hidden sm:flex h-9 w-9 items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-all duration-200 relative">
+              <button
+                className="relative flex h-8 w-8 items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-all dark:text-slate-400 dark:hover:bg-slate-800"
+                aria-label="Notifications"
+              >
                 <Bell className="h-4 w-4" />
-                <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-violet-500 ring-2 ring-white" />
+                <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-brand-500 ring-1 ring-white dark:ring-slate-900" />
               </button>
-              <UserMenu />
+              <div className="ml-1">
+                <UserMenu />
+              </div>
             </div>
           </div>
         </header>
 
-        {/* ── Scrollable page content ── */}
+        {/* ── Scrollable main ── */}
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-7xl px-5 py-6 md:px-8 md:py-8 space-y-6">
-
-            {/* ── Breadcrumb bar ── */}
-            <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white px-5 py-4 shadow-card">
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-slate-400">Navigation</p>
-                <div className="mt-1 flex flex-wrap items-center gap-1.5 text-sm">
-                  <Link href="/dashboard" className="font-medium text-violet-600 hover:text-violet-700 transition-colors">Home</Link>
-                  <span className="text-slate-300">/</span>
-                  <span className="text-slate-500">Overview</span>
-                </div>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <Link
-                  href="/generator"
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 hover:border-slate-300 transition-all duration-200"
-                >
-                  New course
-                </Link>
-                <button className="inline-flex items-center gap-1.5 rounded-xl bg-brand-gradient px-4 py-2 text-sm font-semibold text-white shadow-glow hover:opacity-90 transition-all duration-200">
-                  Invite team
-                </button>
-              </div>
-            </div>
-
+          <div className="mx-auto max-w-7xl space-y-6 px-5 py-6 md:px-8 md:py-8">
             {children}
 
-            {/* ── Footer ── */}
-            <footer className="rounded-2xl border border-slate-200/80 bg-white px-6 py-4 shadow-card">
-              <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between text-xs text-slate-400">
-                <p>CourseAI © 2026 — Built for modern course creators.</p>
-                <p>Version 0.1.0</p>
-              </div>
+            {/* Footer */}
+            <footer className={clsx(
+              "flex flex-col gap-1 rounded-2xl border border-slate-200/80 bg-white",
+              "px-6 py-4 shadow-card",
+              "sm:flex-row sm:items-center sm:justify-between",
+              "dark:border-slate-800 dark:bg-slate-900"
+            )}>
+              <p className="text-xs text-slate-400">CourseAI © 2026 — Built for modern course creators.</p>
+              <p className="text-xs text-slate-400">v0.1.0</p>
             </footer>
           </div>
         </main>

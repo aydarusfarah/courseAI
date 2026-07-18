@@ -1,13 +1,23 @@
 interface SectionHeaderProps {
   title: string;
-  description: string;
+  description?: string;
+  action?: React.ReactNode;
 }
 
-export function SectionHeader({ title, description }: SectionHeaderProps) {
+export function SectionHeader({ title, description, action }: SectionHeaderProps) {
   return (
-    <div className="space-y-1.5">
-      <h2 className="text-2xl font-bold text-slate-900">{title}</h2>
-      <p className="max-w-2xl text-sm leading-6 text-slate-500">{description}</p>
+    <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="space-y-1">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+          {title}
+        </h1>
+        {description && (
+          <p className="text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+            {description}
+          </p>
+        )}
+      </div>
+      {action && <div className="shrink-0">{action}</div>}
     </div>
   );
 }

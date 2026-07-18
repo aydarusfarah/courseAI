@@ -1,61 +1,114 @@
 @import "tailwindcss";
 
+/* ── Light mode tokens ─────────────────────────────────────────── */
 :root {
   color-scheme: light;
-  color: #0f172a;
-  background-color: #f8fafc;
+  --bg:          #F1F5F9;
+  --surface:     #FFFFFF;
+  --surface-2:   #F8FAFC;
+  --border:      #E2E8F0;
+  --border-soft: #F1F5F9;
+  --text:        #0F172A;
+  --text-2:      #475569;
+  --text-3:      #94A3B8;
+  --accent:      #6366F1;
+  --accent-2:    #7C3AED;
 }
 
-html {
-  scroll-behavior: smooth;
+/* ── Dark mode tokens ──────────────────────────────────────────── */
+.dark {
+  color-scheme: dark;
+  --bg:          #0B1220;
+  --surface:     #111827;
+  --surface-2:   #1F2937;
+  --border:      #334155;
+  --border-soft: #1E293B;
+  --text:        #F8FAFC;
+  --text-2:      #CBD5E1;
+  --text-3:      #64748B;
+  --accent:      #818CF8;
+  --accent-2:    #A78BFA;
 }
+
+html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
-  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #f1f5f9;
-  color: #0f172a;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-button,
-input,
-textarea,
-select {
-  font: inherit;
-}
+button, input, textarea, select { font: inherit; }
 
-/* ── Global transitions ───────────────────────────────────────── */
-a,
-button {
+/* ── Transitions ───────────────────────────────────────────────── */
+a, button {
   transition: color 150ms ease, background-color 150ms ease,
-    border-color 150ms ease, box-shadow 150ms ease, opacity 150ms ease;
+    border-color 150ms ease, box-shadow 150ms ease, opacity 150ms ease,
+    transform 150ms ease;
 }
 
-/* ── Custom scrollbar ─────────────────────────────────────────── */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 999px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
+/* ── Scrollbar ─────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+.dark ::-webkit-scrollbar-thumb { background: #334155; }
+.dark ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-/* ── Page transition fade ─────────────────────────────────────── */
-main {
-  animation: fadeIn 180ms ease both;
-}
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
+/* ── Page fade-in ──────────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+main { animation: fadeUp 200ms ease both; }
+
+/* ── Shimmer skeleton ─────────────────────────────────────────── */
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+  background-size: 400px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+.dark .skeleton-shimmer {
+  background: linear-gradient(90deg, #1F2937 25%, #334155 50%, #1F2937 75%);
+  background-size: 400px 100%;
+}
+
+/* ── Focus ring ───────────────────────────────────────────────── */
+*:focus-visible {
+  outline: 2px solid #6366F1;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ── Selection ────────────────────────────────────────────────── */
+::selection { background: #EEF2FF; color: #3730A3; }
+.dark ::selection { background: #312E81; color: #E0E7FF; }
+
+/* ── Gradient text util ───────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #3B82F6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Glass surface ────────────────────────────────────────────── */
+.glass {
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+}
+.dark .glass {
+  background: rgba(17,24,39,0.85);
 }
