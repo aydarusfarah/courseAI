@@ -64,41 +64,41 @@ export function BillingCard({ planName, status, usage, nextRenewal }: BillingCar
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.24em] text-brand-600">Current plan</p>
-            <h3 className="text-2xl font-semibold text-slate-950">{planName}</h3>
-            <p className="text-sm text-slate-600">Status: {status}</p>
+            <h3 className="text-2xl font-semibold text-slate-900 dark:text-white">{planName}</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-400">Status: {status}</p>
           </div>
-          <div className="rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700">
+          <div className="rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400">
             {nextRenewal ? `Renews ${nextRenewal}` : "No active renewal"}
           </div>
         </div>
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-            <p className="text-sm font-semibold text-slate-900">AI generations</p>
-            <p className="mt-2 text-2xl font-semibold text-slate-950">{usage.aiCount} used</p>
-            <p className="text-sm text-slate-600">{usage.aiRemaining} remaining</p>
-            <div className="mt-3 h-2 rounded-full bg-slate-200">
+          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/50">
+            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">AI generations</p>
+            <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-white">{usage.aiCount} used</p>
+            <p className="text-sm text-slate-600 dark:text-slate-400">{usage.aiRemaining} remaining</p>
+            <div className="mt-3 h-2 rounded-full bg-slate-200 dark:bg-slate-700">
               <div className="h-2 rounded-full bg-brand-600" style={{ width: `${aiPercent}%` }} />
             </div>
           </div>
-          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-            <p className="text-sm font-semibold text-slate-900">Courses</p>
-            <p className="mt-2 text-2xl font-semibold text-slate-950">{usage.courseCount} created</p>
-            <p className="text-sm text-slate-600">{usage.courseRemaining} remaining</p>
-            <div className="mt-3 h-2 rounded-full bg-slate-200">
+          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/50">
+            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">Courses</p>
+            <p className="mt-2 text-2xl font-semibold text-slate-900 dark:text-white">{usage.courseCount} created</p>
+            <p className="text-sm text-slate-600 dark:text-slate-400">{usage.courseRemaining} remaining</p>
+            <div className="mt-3 h-2 rounded-full bg-slate-200 dark:bg-slate-700">
               <div className="h-2 rounded-full bg-brand-600" style={{ width: `${coursePercent}%` }} />
             </div>
           </div>
         </div>
       </Card>
       <Card className="space-y-4">
-        <h3 className="text-lg font-semibold text-slate-950">Upgrade or manage billing</h3>
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Upgrade or manage billing</h3>
         <div className="flex flex-wrap gap-3">
           <Button onClick={() => handleCheckout("monthly")} disabled={loading !== null}>{loading === "checkout" ? "Preparing…" : "Upgrade to Pro (Monthly)"}</Button>
           <Button variant="outline" onClick={() => handleCheckout("yearly")} disabled={loading !== null}>Upgrade to Pro (Yearly)</Button>
           <Button variant="secondary" onClick={handlePortal} disabled={loading !== null}>Manage billing</Button>
           <Button variant="outline" onClick={handleCancel} disabled={loading !== null}>Cancel subscription</Button>
         </div>
-        <p className="text-sm text-slate-600">Pro includes unlimited courses, unlimited AI generations, all export formats, premium templates, and no watermarks.</p>
+        <p className="text-sm text-slate-600 dark:text-slate-400">Pro includes unlimited courses, unlimited AI generations, all export formats, premium templates, and no watermarks.</p>
       </Card>
     </div>
   );

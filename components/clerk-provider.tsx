@@ -11,6 +11,7 @@ export function ClerkProviderRoot({ children }: ClerkProviderProps) {
     <ClerkProvider
       signInUrl="/auth/sign-in"
       signUpUrl="/auth/sign-up"
+      afterSignOutUrl="/"
     >
       {children}
     </ClerkProvider>

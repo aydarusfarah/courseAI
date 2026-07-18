@@ -3,6 +3,7 @@ import { getPlanSnapshot } from "../../../lib/billing";
 import { Card } from "../../../components/card";
 import { SectionHeader } from "../../../components/section-header";
 import { Badge } from "../../../components/ui/badge";
+import { User, Mail, ShieldCheck, CreditCard, Calendar, Activity } from "lucide-react";
 
 export default async function ProfilePage() {
   const user = await ensurePrismaUser();
@@ -10,10 +11,17 @@ export default async function ProfilePage() {
 
   const planName = snapshot.plan === "PRO" ? "Pro" : "Free";
   const joinedDate = new Date(user.createdAt).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric"
+    year: "numeric", month: "long", day: "numeric"
   });
+
+  const profileFields = [
+    { label: "Full name",          value: user.name ?? "—",              icon: User },
+    { label: "Email address",      value: user.email,                    icon: Mail },
+    { label: "Account role",       value: user.role,                     icon: ShieldCheck },
+    { label: "Subscription plan",  value: planName,                      icon: CreditCard },
+    { label: "Member since",       value: joinedDate,                    icon: Calendar },
+    { label: "Account status",     value: user.suspended ? "Suspended" : "Active", icon: Activity }
+  ];
 
   return (
     <div className="space-y-8">
@@ -21,42 +29,36 @@ export default async function ProfilePage() {
 
       <Card className="space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-brand-600">Account</p>
-            <h3 className="mt-1 text-2xl font-semibold text-slate-950">{user.name ?? "CourseAI User"}</h3>
-            <p className="text-sm text-slate-600">{user.email}</p>
+          <div className="flex items-center gap-4">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-theme-gradient text-xl font-bold text-white shadow-glow">
+              {(user.name ?? user.email)?.[0]?.toUpperCase() ?? "U"}
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest text-theme-accent">Account</p>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">{user.name ?? "CourseAI User"}</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">{user.email}</p>
+            </div>
           </div>
-          <Badge variant={snapshot.active ? "success" : "default"}>{planName} plan</Badge>
+          <Badge variant={snapshot.active ? "success" : "default"} size="md">{planName} plan</Badge>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-            <p className="text-sm font-medium text-slate-500">Full name</p>
-            <p className="mt-2 text-sm font-semibold text-slate-900">{user.name ?? "—"}</p>
-          </div>
-          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-            <p className="text-sm font-medium text-slate-500">Email address</p>
-            <p className="mt-2 text-sm font-semibold text-slate-900">{user.email}</p>
-          </div>
-          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-            <p className="text-sm font-medium text-slate-500">Account role</p>
-            <p className="mt-2 text-sm font-semibold text-slate-900">{user.role}</p>
-          </div>
-          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-            <p className="text-sm font-medium text-slate-500">Subscription plan</p>
-            <p className="mt-2 text-sm font-semibold text-slate-900">{planName}</p>
-          </div>
-          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-            <p className="text-sm font-medium text-slate-500">Member since</p>
-            <p className="mt-2 text-sm font-semibold text-slate-900">{joinedDate}</p>
-          </div>
-          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-            <p className="text-sm font-medium text-slate-500">Account status</p>
-            <p className="mt-2 text-sm font-semibold text-slate-900">{user.suspended ? "Suspended" : "Active"}</p>
-          </div>
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {profileFields.map(f => (
+            <div
+              key={f.label}
+              className="flex items-start gap-3 rounded-xl border border-slate-100 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/40"
+            >
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white shadow-xs dark:bg-slate-800">
+                <f.icon className="h-4 w-4 text-slate-400 dark:text-slate-500" aria-hidden="true" />
+              </div>
+              <div>
+                <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{f.label}</p>
+                <p className="mt-0.5 text-sm font-semibold text-slate-900 dark:text-white">{f.value}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </Card>
     </div>
   );
 }
-

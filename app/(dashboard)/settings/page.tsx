@@ -15,29 +15,23 @@ export default async function SettingsPage() {
         <AdminSettingsForm initialSettings={settings} />
       ) : (
         <Card className="space-y-5">
-          <p className="text-sm font-semibold text-slate-900">Application preferences</p>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-              <p className="text-sm font-medium text-slate-500">Site name</p>
-              <p className="mt-2 text-sm font-semibold text-slate-900">{settings.siteName}</p>
-            </div>
-            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-              <p className="text-sm font-medium text-slate-500">Default theme</p>
-              <p className="mt-2 text-sm font-semibold text-slate-900">{settings.defaultTheme}</p>
-            </div>
-            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-              <p className="text-sm font-medium text-slate-500">Default AI model</p>
-              <p className="mt-2 text-sm font-semibold text-slate-900">{settings.defaultAiModel}</p>
-            </div>
-            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-              <p className="text-sm font-medium text-slate-500">Rate limit (requests)</p>
-              <p className="mt-2 text-sm font-semibold text-slate-900">{settings.rateLimitRequests} per {settings.rateLimitWindow}s</p>
-            </div>
+          <p className="text-sm font-semibold text-slate-900 dark:text-white">Application preferences</p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {[
+              { label: "Site name",         value: settings.siteName },
+              { label: "Default theme",     value: settings.defaultTheme },
+              { label: "Default AI model",  value: settings.defaultAiModel },
+              { label: "Rate limit",        value: `${settings.rateLimitRequests} req / ${settings.rateLimitWindow}s` }
+            ].map(({ label, value }) => (
+              <div key={label} className="rounded-xl border border-slate-100 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/40">
+                <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{label}</p>
+                <p className="mt-1 text-sm font-semibold text-slate-900 dark:text-white">{value}</p>
+              </div>
+            ))}
           </div>
-          <p className="text-sm text-slate-600">Contact your administrator to modify application settings.</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Contact your administrator to modify application settings.</p>
         </Card>
       )}
     </div>
   );
 }
-

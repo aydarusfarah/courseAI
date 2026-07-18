@@ -1,34 +1,163 @@
 @import "tailwindcss";
 
-/* ── Light mode tokens ─────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════════
+   THEME SYSTEM — CSS custom properties
+   The [data-theme] attribute is set on <html> by ThemeProvider.
+   dark class is toggled independently for light/dark mode.
+═══════════════════════════════════════════════════════════════════ */
+
+/* ── Default (Indigo) ─────────────────────────────────────────── */
 :root {
   color-scheme: light;
+
+  /* Backgrounds */
   --bg:          #F1F5F9;
   --surface:     #FFFFFF;
   --surface-2:   #F8FAFC;
+  --surface-3:   #F1F5F9;
+
+  /* Borders */
   --border:      #E2E8F0;
   --border-soft: #F1F5F9;
+
+  /* Text */
   --text:        #0F172A;
   --text-2:      #475569;
   --text-3:      #94A3B8;
+
+  /* Accent — Indigo */
   --accent:      #6366F1;
-  --accent-2:    #7C3AED;
+  --accent-2:    #4F46E5;
+  --accent-3:    #818CF8;
+  --accent-bg:   #EEF2FF;
+  --accent-border: #C7D2FE;
+
+  /* Status */
+  --success:     #059669;
+  --warning:     #D97706;
+  --danger:      #DC2626;
 }
 
-/* ── Dark mode tokens ──────────────────────────────────────────── */
+/* ── Dark mode ────────────────────────────────────────────────── */
 .dark {
   color-scheme: dark;
+
   --bg:          #0B1220;
   --surface:     #111827;
   --surface-2:   #1F2937;
+  --surface-3:   #1E293B;
+
   --border:      #334155;
   --border-soft: #1E293B;
+
   --text:        #F8FAFC;
   --text-2:      #CBD5E1;
   --text-3:      #64748B;
+
   --accent:      #818CF8;
-  --accent-2:    #A78BFA;
+  --accent-2:    #6366F1;
+  --accent-3:    #A5B4FC;
+  --accent-bg:   #1e1b4b;
+  --accent-border: #3730a3;
 }
+
+/* ── Theme: Purple ────────────────────────────────────────────── */
+[data-theme="purple"] {
+  --accent:      #7C3AED;
+  --accent-2:    #6D28D9;
+  --accent-3:    #A78BFA;
+  --accent-bg:   #F5F3FF;
+  --accent-border: #DDD6FE;
+}
+.dark[data-theme="purple"] {
+  --accent:      #A78BFA;
+  --accent-2:    #8B5CF6;
+  --accent-3:    #C4B5FD;
+  --accent-bg:   #2d1b69;
+  --accent-border: #4c1d95;
+}
+
+/* ── Theme: Emerald ───────────────────────────────────────────── */
+[data-theme="emerald"] {
+  --accent:      #059669;
+  --accent-2:    #047857;
+  --accent-3:    #34D399;
+  --accent-bg:   #ECFDF5;
+  --accent-border: #A7F3D0;
+}
+.dark[data-theme="emerald"] {
+  --accent:      #34D399;
+  --accent-2:    #10B981;
+  --accent-3:    #6EE7B7;
+  --accent-bg:   #022c22;
+  --accent-border: #065f46;
+}
+
+/* ── Theme: Ocean Blue ────────────────────────────────────────── */
+[data-theme="ocean"] {
+  --accent:      #2563EB;
+  --accent-2:    #1D4ED8;
+  --accent-3:    #60A5FA;
+  --accent-bg:   #EFF6FF;
+  --accent-border: #BFDBFE;
+}
+.dark[data-theme="ocean"] {
+  --accent:      #60A5FA;
+  --accent-2:    #3B82F6;
+  --accent-3:    #93C5FD;
+  --accent-bg:   #172554;
+  --accent-border: #1e40af;
+}
+
+/* ── Theme: Rose ──────────────────────────────────────────────── */
+[data-theme="rose"] {
+  --accent:      #E11D48;
+  --accent-2:    #BE123C;
+  --accent-3:    #FB7185;
+  --accent-bg:   #FFF1F2;
+  --accent-border: #FECDD3;
+}
+.dark[data-theme="rose"] {
+  --accent:      #FB7185;
+  --accent-2:    #F43F5E;
+  --accent-3:    #FDA4AF;
+  --accent-bg:   #4c0519;
+  --accent-border: #9f1239;
+}
+
+/* ── Theme: Orange ────────────────────────────────────────────── */
+[data-theme="orange"] {
+  --accent:      #EA580C;
+  --accent-2:    #C2410C;
+  --accent-3:    #FB923C;
+  --accent-bg:   #FFF7ED;
+  --accent-border: #FED7AA;
+}
+.dark[data-theme="orange"] {
+  --accent:      #FB923C;
+  --accent-2:    #F97316;
+  --accent-3:    #FDBA74;
+  --accent-bg:   #431407;
+  --accent-border: #7c2d12;
+}
+
+/* ── Theme: Midnight ──────────────────────────────────────────── */
+[data-theme="midnight"] {
+  --accent:      #475569;
+  --accent-2:    #334155;
+  --accent-3:    #94A3B8;
+  --accent-bg:   #F8FAFC;
+  --accent-border: #E2E8F0;
+}
+.dark[data-theme="midnight"] {
+  --accent:      #94A3B8;
+  --accent-2:    #CBD5E1;
+  --accent-3:    #E2E8F0;
+  --accent-bg:   #020617;
+  --accent-border: #1e293b;
+}
+
+/* ─────────────────────────────────────────────────────────────── */
 
 html { scroll-behavior: smooth; }
 
@@ -43,8 +172,26 @@ body {
 }
 
 * { box-sizing: border-box; }
-
 button, input, textarea, select { font: inherit; }
+
+/* ── Theme-aware utility classes ──────────────────────────────── */
+.bg-theme-accent   { background-color: var(--accent); }
+.bg-theme-accent-2 { background-color: var(--accent-2); }
+.bg-theme-surface  { background-color: var(--surface); }
+.bg-theme-surface-2{ background-color: var(--surface-2); }
+.bg-theme-bg       { background-color: var(--bg); }
+.bg-theme-accent-bg{ background-color: var(--accent-bg); }
+.text-theme-accent { color: var(--accent); }
+.text-theme        { color: var(--text); }
+.text-theme-2      { color: var(--text-2); }
+.text-theme-3      { color: var(--text-3); }
+.border-theme      { border-color: var(--border); }
+.border-theme-accent{ border-color: var(--accent-border); }
+
+/* Theme-aware gradient (buttons/badges) */
+.bg-theme-gradient {
+  background: linear-gradient(135deg, var(--accent-2) 0%, var(--accent) 100%);
+}
 
 /* ── Transitions ───────────────────────────────────────────────── */
 a, button {
@@ -86,18 +233,17 @@ main { animation: fadeUp 200ms ease both; }
 
 /* ── Focus ring ───────────────────────────────────────────────── */
 *:focus-visible {
-  outline: 2px solid #6366F1;
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
   border-radius: 6px;
 }
 
 /* ── Selection ────────────────────────────────────────────────── */
-::selection { background: #EEF2FF; color: #3730A3; }
-.dark ::selection { background: #312E81; color: #E0E7FF; }
+::selection { background: var(--accent-bg); color: var(--accent-2); }
 
 /* ── Gradient text util ───────────────────────────────────────── */
 .gradient-text {
-  background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #3B82F6 100%);
+  background: linear-gradient(135deg, var(--accent-2) 0%, var(--accent) 50%, var(--accent-3) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -111,4 +257,13 @@ main { animation: fadeUp 200ms ease both; }
 }
 .dark .glass {
   background: rgba(17,24,39,0.85);
+}
+
+/* ── Stat card hover ──────────────────────────────────────────── */
+.stat-card {
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(99,102,241,0.10);
 }

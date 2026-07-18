@@ -4,6 +4,8 @@ import { prisma } from "../../../lib/prisma";
 import { BillingCard } from "../../../components/billing-card";
 import { Card } from "../../../components/card";
 import { SectionHeader } from "../../../components/section-header";
+import { Badge } from "../../../components/ui/badge";
+import { ReceiptText } from "lucide-react";
 
 export default async function BillingPage() {
   const user = await ensurePrismaUser();
@@ -13,7 +15,9 @@ export default async function BillingPage() {
     prisma.payment.findMany({ where: { userId: user.id }, orderBy: { createdAt: "desc" }, take: 10 })
   ]);
 
-  const nextRenewal = snapshot.currentPeriodEnd ? new Date(snapshot.currentPeriodEnd).toLocaleDateString() : null;
+  const nextRenewal = snapshot.currentPeriodEnd
+    ? new Date(snapshot.currentPeriodEnd).toLocaleDateString()
+    : null;
 
   return (
     <div className="space-y-8">
@@ -25,20 +29,32 @@ export default async function BillingPage() {
         usage={usage}
       />
       <Card className="space-y-5">
-        <h3 className="text-lg font-semibold text-slate-950">Invoices</h3>
-        <div className="space-y-3">
+        <div className="flex items-center justify-between gap-4">
+          <h2 className="text-base font-semibold text-slate-900 dark:text-white">Invoices</h2>
+          <Badge variant="default">{payments.length} total</Badge>
+        </div>
+        <div className="space-y-2">
           {payments.length === 0 ? (
-            <p className="text-sm text-slate-600">No invoices yet. Upgrade to Pro to start billing.</p>
+            <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-slate-200 py-10 text-center dark:border-slate-700">
+              <ReceiptText className="h-8 w-8 text-slate-300 dark:text-slate-600" />
+              <p className="text-sm text-slate-500 dark:text-slate-400">No invoices yet. Upgrade to Pro to start billing.</p>
+            </div>
           ) : (
             payments.map((payment) => (
-              <div key={payment.id} className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+              <div key={payment.id} className="rounded-xl border border-slate-100 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/40">
                 <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="font-semibold text-slate-950">{payment.stripePaymentId ?? payment.id}</p>
-                    <p className="text-sm text-slate-600">{new Date(payment.createdAt).toLocaleDateString()}</p>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-slate-900 dark:text-white">
+                      {payment.stripePaymentId ?? payment.id}
+                    </p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      {new Date(payment.createdAt).toLocaleDateString()}
+                    </p>
                   </div>
-                  <p className="text-sm font-semibold text-slate-900">${(payment.amount / 100).toFixed(2)}</p>
-                  <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-emerald-700">{payment.status}</span>
+                  <p className="text-sm font-bold text-slate-900 dark:text-white">
+                    ${(payment.amount / 100).toFixed(2)}
+                  </p>
+                  <Badge variant="success">{payment.status}</Badge>
                 </div>
               </div>
             ))

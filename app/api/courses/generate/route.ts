@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { ensurePrismaUser, AuthError } from "../../../../lib/auth";
 import { generateCourse, type GenerationStep } from "../../../../lib/generation";
 import { generatorFormSchema, mapFormToGenerationInput } from "../../../../lib/validation/generation";
+import { toAIError } from "../../../../lib/ai";
 
 const stepLabels: Record<GenerationStep, string> = {
   outline: "Generating course outline",
@@ -58,8 +59,8 @@ export async function POST(request: NextRequest) {
         if (error instanceof AuthError) {
           send({ type: "error", message: "You must be signed in to generate a course." });
         } else {
-          const message = error instanceof Error ? error.message : "Course generation failed.";
-          send({ type: "error", message });
+          const aiErr = toAIError(error);
+          send({ type: "error", message: aiErr.message, code: aiErr.code });
         }
         controller.close();
       }
